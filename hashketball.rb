@@ -99,121 +99,190 @@ def game_hash
                             end
 
 def num_points_scored (player_name)
-  game_hash.each do |side, team_data|
-    team_data.each do |attribute, data|
-      if attribute == :players
-      data.each do |player, other|
-    if player == player_name
-       other.each do |number, value|
-          if number == :points
-           return value
-         end
-         end
-         end
-       end
-     end
-   end
- end
+  game_hash.each {|side, tdata|
+  tdata.each {|tattributes, info|
+    if tattributes == :players
+    info.each {|player, stats|
+      if player == player_name
+      stats.each {|area, value|
+      if area == :points
+
+        return value
+      end
+        }
+      end
+      }
+    end
+  }
+}
 end
 
+def shoe_size (player_name)
+  game_hash.each {|side, tdata|
+  tdata.each {|tattributes, info|
+    if tattributes == :players
+    info.each {|player, stats|
+      if player == player_name
+      stats.each {|area, value|
+      if area == :shoe
 
+        return value
 
-def shoe_size(pname)
-  game_hash.collect do |side, team_data|
-    team_data.each do |attribute, data|
-      if attribute == :players
-      data.each do |player, other|
-    if player == pname
-       other.each do |number, value|
-          if number == :shoe
-           return value
-         end
-         end
-         end
-         end
-         end
-         end
-         end
-       end
-
-
+      end
+    }
+  end
+}
+end
+}
+}
+end
 
 def team_colors (team)
-
-  game_hash.each do |side, team_data|
-    if game_hash[side][:team_name] == team
-    team_data.each do |attribute, data|
-      if attribute == :colors
-        return data
-      end
+  game_hash.each {|side, tdata|
+  tdata.each {|tattributes, info|
+    if game_hash[side][:team_name] == team && tattributes == :colors
+      return info
     end
-  end
-end
+  }}
 end
 
 def team_names
   x = []
-  game_hash.each do |side, team_data|
-    team_data.each do |attribute, data|
-      if attribute == :team_name && x.include?(data) == false
-         x << data
-       end
-     end
-   end
-   return x
- end
-
-def player_numbers(team)
-  x = []
-  game_hash.each do |side, team_data|
-
-  if  game_hash[side][:team_name] == team
-    team_data.each do |attribute, data|
-      if attribute == :players
-        data.each do |pname, pdata|
-         pdata.each do |stat, value|
-            if stat == :number
-              x << value
-            end
-          end
-        end
-      end
+  game_hash.each {|side, tdata|
+  tdata.each {|tattributes, info|
+    if tattributes == :team_name
+      x << info
     end
-  end
-  end
+  }}
   return x
 end
 
-
-def player_stats (pname)
-  game_hash.each do |side, team_data|
-    team_data.each do |attribute, data|
-      if attribute == :players
-        data.each do |player, pdata|
-          if player == pname
-            return pdata
-          end
+def player_numbers (tname)
+  x = []
+  game_hash.each {|side, tdata|
+  tdata.each {|tattributes, info|
+    if tattributes == :players
+      info.each {|pname, stats|
+      stats.each {|area, value|
+        if area == :number && game_hash[side][:team_name] == tname
+          x << value
         end
+        }}
       end
+    }}
+    return x
+  end
+
+  def player_stats (pname)
+    game_hash.each {|side, tdata|
+    tdata.each {|tattributes, info|
+      if tattributes == :players
+        info.each {|p_name, stats|
+          if pname == p_name
+            return stats
+          end
+        }
+      end
+    }}
+  end
+
+  def big_shoe_rebounds
+    l_shoe_size = 10
+    l_rebounds = ""
+    game_hash.each {|side, tdata|
+    tdata.each {|tattributes, info|
+      if tattributes == :players
+        info.each {|pname, stats|
+        stats.each {|area, value|
+          if area == :shoe && value > l_shoe_size
+            l_shoe_size = value
+            l_rebounds = stats[:rebounds]
+          end
+      }
+
+    }
+  end
+    }}
+l_rebounds
+  end
+
+def most_points_scored
+  most_points = 10
+  most_points_player = ""
+  game_hash.each {|side, tdata|
+  tdata.each {|tattributes, info|
+    if tattributes == :players
+      info.each {|pname, stats|
+      stats.each {|area, value|
+        if area == :points && value > most_points
+          most_points = value
+          most_points_player = pname
+        end
+      }}
     end
+  }}
+  most_points_player
+end
+
+def winning_team
+  home_points = 0
+  away_points = 0
+  game_hash.each {|side, tdata|
+  tdata.each {|tattributes, info|
+    if tattributes == :players
+      info.each {|pname, stats|
+      stats.each {|area, value|
+        if side == :home && area == :points
+        home_points = home_points + value
+        end
+        if side == :away && area == :points
+          away_points = away_points + value
+        end
+      }}
+    end
+  }}
+  if home_points > away_points
+    return game_hash[:home][:team_name]
+  else
+    return game_hash[:away][:team_name]
   end
 end
 
-
-def big_shoe_rebounds
-  game_hash.each do |side, team_data|
-    team_data.each do |attribute, data|
-      if attribute == :players
-        data.each do |pname, pdata|
-          if pname == "Mason Plumlee"
-         pdata.each do |stat, value|
-           if stat == :rebounds
-             return value
-           end
-         end
-       end
-     end
-   end
- end
+def player_with_longest_name
+  name_length = 0
+  name_length_player = ""
+  game_hash.each {|side, tdata|
+  tdata.each {|tattributes, info|
+    if tattributes == :players
+      info.each {|pname, stats|
+        if pname.length > name_length
+          name_length = pname.length
+          name_length_player = pname
+        end
+      }
+    end
+  }}
+  name_length_player
 end
+
+def long_name_steals_a_ton?
+  most_steals = 10
+  most_steals_player = ""
+  game_hash.each {|side, tdata|
+  tdata.each {|tattributes, info|
+    if tattributes == :players
+      info.each {|pname, stats|
+      stats.each {|area, value|
+        if area == :steals && value > most_steals
+          most_steals = value
+          most_steals_player = pname
+        end
+      }}
+    end
+  }}
+  if most_steals_player == player_with_longest_name
+    return true
+  else
+    return false
+  end
 end
